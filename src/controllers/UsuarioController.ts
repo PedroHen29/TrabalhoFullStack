@@ -3,50 +3,40 @@ import { UsuarioService } from "../services/UsuarioService";
 import { CriarUsuarioSchema } from "../dtos/criarUsuarioSchema";
 import { AtualizarUsuarioSchema } from "../dtos/atualizarUsuarioSchema";
 import { BadRequestError } from "../errors/AppError";
+import { usuarioParamsSchema } from "../dtos/usuarioParamsSchema";
 
 const usuarioService = new UsuarioService()
 
 export class UsuarioController {
 
     async criarUsuario(req: Request, res: Response, next: NextFunction) {
+    try {
 
-        try {
+        const validar = CriarUsuarioSchema.safeParse(req.body)
 
-            const validar = CriarUsuarioSchema.safeParse(req.body)
-
-            if (validar.success === true) {
-
-                const dados = validar.data
-
-                const usuario = await usuarioService.criarUsuario(dados)
-
-                return res.status(201).json({
-                    message: 'Usuario criado com sucesso.',
-                    usuario
-                })
-
-            } else {
-
-                return res.status(400).json({
-                    message: 'Erro ao tentar criar o usuario.'
-                })
-
-            }
-
-        } catch (err) {
-
-            next(err)
-
+        if (!validar.success) {
+            throw validar.error
         }
 
+        const dados = validar.data
+
+        const usuario = await usuarioService.criarUsuario(dados)
+
+        return res.status(201).json({
+            message: 'Usuario criado com sucesso.',
+            usuario
+        })
+
+    } catch (err) {
+        next(err)
     }
+}
 
     async buscarUsuario(req: Request, res: Response, next: NextFunction) {
 
         try {
-
-            const id = Number(req.params.id)
-
+            const validar = usuarioParamsSchema.parse(req.params)
+            const  {id}   = validar
             const usuario = await usuarioService.buscarUsuario(id)
 
             return res.status(200).json({
@@ -66,7 +56,8 @@ export class UsuarioController {
 
         try {
 
-            const id = Number(req.params.id)
+           const validarId = usuarioParamsSchema.parse(req.params)
+            const  {id}   = validarId
 
             const validar = AtualizarUsuarioSchema.safeParse(req.body)
 
@@ -93,8 +84,8 @@ export class UsuarioController {
     async deletarUsuario(req: Request, res: Response, next: NextFunction) {
 
         try {
-
-            const id = Number(req.params.id)
+            const validar = usuarioParamsSchema.parse(req.params)
+            const  {id}   = validar
 
             await usuarioService.deletarUsuario(id)
 
