@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { UsuarioService } from "../services/UsuarioService";
-import { CriarUsuarioSchema } from "../dtos/criarUsuarioSchema";
-import { AtualizarUsuarioSchema } from "../dtos/atualizarUsuarioSchema";
+import { CriarUsuarioSchema } from "../dtos/usuario/criarUsuarioSchema";
+import { AtualizarUsuarioSchema } from "../dtos/usuario/atualizarUsuarioSchema";
 import { BadRequestError } from "../errors/AppError";
-import { usuarioParamsSchema } from "../dtos/usuarioParamsSchema";
+import { usuarioParamsSchema } from "../dtos/usuario/usuarioParamsSchema";
 
 const usuarioService = new UsuarioService()
 

@@ -2,6 +2,7 @@ import 'reflect-metadata'
 import { DataSource } from 'typeorm'
 import * as dotenv from 'dotenv'
 import { Usuarios } from "../models/Usuario";
+import { Pedidos } from '../models/Pedido';
 
 dotenv.config()
 
@@ -14,23 +15,14 @@ const {
 } = process.env
 
 export const AppDataSource = new DataSource({
-
     type: 'mysql',
-
     host: DB_HOST,
-
     port: Number(DB_PORT),
-
     username: DB_USERNAME,
-
     password: DB_PASSWORD,
-
     database: DB_DATABASE,
-
-    entities: [Usuarios],
-
+    entities: [Usuarios, Pedidos],
     synchronize: true,
-
     logging: true
 
 })

@@ -1,7 +1,7 @@
 import { AppDataSource } from "../database/dataSource";
 import { Usuarios } from "../models/Usuario";
-import { CriarUsuarioDTO } from "../dtos/CriarUsuarioDTO";
-import { AtualizarUsuarioDTO } from "../dtos/AtualizarUsuarioDTO";
+import { CriarUsuarioDTO } from "../dtos/usuario/CriarUsuarioDTO";
+import { AtualizarUsuarioDTO } from "../dtos/usuario/AtualizarUsuarioDTO";
 import { NotFoundError } from "../errors/AppError";
 import { ConflictError } from "../errors/AppError";
 import bcrypt from 'bcryptjs'
