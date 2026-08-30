@@ -1,12 +1,15 @@
 import { AppDataSource } from "../database/dataSource";
 import { AtualizarPedidoDTO } from "../dtos/pedido/AtualizarPedidoDTO";
 import { CriarPedidoDTO } from "../dtos/pedido/CriarPedidoDTO";
-import { NotFoundError } from "../errors/AppError";
+import { BadRequestError, NotFoundError } from "../errors/AppError";
 
 const pedidoRepository = AppDataSource.getRepository('Pedidos')
 const usuarioRepository = AppDataSource.getRepository('Usuarios')
 export class PedidoService {
     async criarPedido(dados: CriarPedidoDTO){
+        if(dados.valorTotal <= 0){
+            throw new BadRequestError('Valor total não pode ser igual ou menor que zero')
+        }
         const usuario = await usuarioRepository.findOne({where: {id:dados.usuarioId}})
         if(!usuario){
             throw new NotFoundError('Usuario não encontrado.')
@@ -33,12 +36,18 @@ export class PedidoService {
         throw new NotFoundError('Pedido não encontrado');
         }
 
-        if (dados.usuarioId) {
-        const usuario = await usuarioRepository.findOne({ where: { id: dados.usuarioId } });
-        if (!usuario) {
-            throw new NotFoundError('Usuário não encontrado');
+        if(dados.valorTotal !== undefined){
+            if(dados.valorTotal <= 0){
+                throw new BadRequestError('Valor total não pode ser menor ou igual a zero.')
+            }
         }
-        pedido.usuario = usuario;
+
+        if (dados.usuarioId !== undefined) {
+            const usuario = await usuarioRepository.findOne({ where: { id: dados.usuarioId } });
+            if (!usuario) {
+                throw new NotFoundError('Usuário não encontrado');
+            }
+            pedido.usuario = usuario;
         }
 
         if (dados.data !== undefined) pedido.data = dados.data;

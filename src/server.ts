@@ -2,10 +2,8 @@ import express, { Application } from "express";
 import { AppDataSource } from "./database/dataSource";
 import usuarioRouter from "./routes/usuarioRoutes";
 import pedidoRouter from "./routes/pedidoRoutes"
-import {
-    errorMiddleware,
-    notFoundMiddleware
-} from "./middlewares/errorMiddleware";
+import produtoRouter from "./routes/produtoRoutes"
+import {errorMiddleware,notFoundMiddleware} from "./middlewares/errorMiddleware";
 
 const app: Application = express()
 
@@ -19,6 +17,7 @@ app.get('/', (req, res) => {
 
 app.use('/usuarios', usuarioRouter)
 app.use('/pedidos', pedidoRouter)
+app.use('/produtos', produtoRouter)
 
 app.use(notFoundMiddleware)
 
