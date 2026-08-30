@@ -1,6 +1,7 @@
 import express, { Application } from "express";
 import { AppDataSource } from "./database/dataSource";
 import usuarioRouter from "./routes/usuarioRoutes";
+import pedidoRouter from "./routes/pedidoRoutes"
 import {
     errorMiddleware,
     notFoundMiddleware
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/usuarios', usuarioRouter)
+app.use('/pedidos', pedidoRouter)
 
 app.use(notFoundMiddleware)
 

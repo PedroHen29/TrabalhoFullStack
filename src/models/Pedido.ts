@@ -1,5 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ForeignKey, ManyToOne, JoinColumn } from "typeorm";
-import { Decimal128 } from "typeorm/driver/mongodb/bson.typings.js";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
 import { Usuarios } from "./Usuario";
 
 @Entity('pedidos')
