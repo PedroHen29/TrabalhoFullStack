@@ -1,7 +1,6 @@
 import { PedidoService } from "../services/PedidoService";
 import { criarPedidoSchema } from "../dtos/pedido/criarPedidoSchema";
 import { Request, Response, NextFunction } from "express";
-import { AtualizarUsuarioSchema } from "../dtos/usuario/atualizarUsuarioSchema";
 import { pedidoParamsSchema } from "../dtos/pedido/pedidoParamsSchema";
 import { atualizarPedidoSchema } from "../dtos/pedido/atualizarPedidoSchema";
 

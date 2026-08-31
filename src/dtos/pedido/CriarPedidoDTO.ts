@@ -1,5 +1,5 @@
-export type CriarPedidoDTO ={
-    data: Date,
-    valorTotal: number,
-    usuarioId: number
+export type CriarPedidoDTO = {
+    usuarioId: number,
+    produtoId: number,
+    quantidade: number
 }

@@ -16,7 +16,6 @@ export class ProdutoController {
             const produto = await produtoService.criarProduto(dados)
             return res.status(201).json({message: 'Produto criado com sucesso.', produto})
         }catch(err){
-            console.log(err)
             next(err)
         }
     }

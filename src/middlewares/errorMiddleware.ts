@@ -3,21 +3,17 @@ import { ZodError } from "zod";
 import { AppError } from "../errors/AppError";
 
 const errorMiddleware: ErrorRequestHandler = (err, req, res, next) => {
-    
-    if (err instanceof ZodError) {
-
         if (err instanceof ZodError) {
         return res.status(400).json({
         message: 'Dados inválidos.',
         errors: err.issues.map((erro) => ({
             campo: erro.path.join('.'),
             message: erro.message
-        }))
-    })
-
-}
-
+            }))
+        })
     }
+
+    
 
     if (err instanceof AppError) {
 

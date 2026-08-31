@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv'
 import { Usuarios } from "../models/Usuario";
 import { Pedidos } from '../models/Pedido';
 import { Produtos} from '../models/Produto';
+import { ItemPedido } from '../models/ItemPedido';
 
 dotenv.config()
 
@@ -22,7 +23,7 @@ export const AppDataSource = new DataSource({
     username: DB_USERNAME,
     password: DB_PASSWORD,
     database: DB_DATABASE,
-    entities: [Usuarios, Pedidos, Produtos],
+    entities: [Usuarios, Pedidos, Produtos, ItemPedido],
     synchronize: true,
     logging: true
 

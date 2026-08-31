@@ -62,7 +62,7 @@ export class UsuarioController {
             const validar = AtualizarUsuarioSchema.safeParse(req.body)
 
             if (!validar.success) {
-                throw new BadRequestError("Dados inválidos.")
+                throw validar.error
             }
 
             const dados = validar.data

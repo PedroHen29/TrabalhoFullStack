@@ -5,7 +5,6 @@ import { AtualizarUsuarioDTO } from "../dtos/usuario/AtualizarUsuarioDTO";
 import { NotFoundError } from "../errors/AppError";
 import { ConflictError } from "../errors/AppError";
 import bcrypt from 'bcryptjs'
-import { email } from "zod";
 
 const usuarioRepository = AppDataSource.getRepository(Usuarios)
 
@@ -26,7 +25,6 @@ export class UsuarioService {
         const usuario = usuarioRepository.create(novosDados)
 
         await usuarioRepository.save(usuario)
-
         return usuario
     }
 
@@ -44,7 +42,6 @@ export class UsuarioService {
     }
 
     async atualizarUsuario(id: number, dados: AtualizarUsuarioDTO) {
-
         const usuario = await usuarioRepository.findOne({
             where: { id: id }
         })
@@ -57,6 +54,15 @@ export class UsuarioService {
 
         if (novosDados.senha) {
             novosDados.senha = await bcrypt.hash(novosDados.senha, 10)
+        }
+
+        if(dados.email){
+            const usuario = await usuarioRepository.findOne({where: {email: dados.email}})
+            if(usuario){
+                if(usuario.id !== id){
+                    throw new ConflictError('Email já existe.')
+                }
+            }
         }
 
         const novoUsuario = Object.assign(usuario, novosDados)

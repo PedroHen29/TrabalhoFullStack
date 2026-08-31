@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from "typeorm";
 import { Usuarios } from "./Usuario";
+import { ItemPedido } from "./ItemPedido";
 
 @Entity('pedidos')
 export class Pedidos{
@@ -16,4 +17,6 @@ export class Pedidos{
     @JoinColumn({name: 'usuarioId'})
     usuario: Usuarios
 
+    @OneToMany(() => ItemPedido, item => item.pedido)
+    itens: ItemPedido[]
 }
