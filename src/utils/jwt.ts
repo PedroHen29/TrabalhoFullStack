@@ -16,6 +16,7 @@ export function generateToken(payload: Payload) {
     //1 - payload
     //2 - segredo, que vem pelo dotenv
     //3 - um objeto com o atributo 'expirenIn' que carrega a informação do dotenv
+
     return jwt.sign(payload, process.env.JWT_SECRET!, {
         expiresIn: Number(process.env.JWT_EXPIRES_IN)
     })

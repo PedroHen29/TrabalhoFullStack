@@ -31,29 +31,32 @@ export class UsuarioService {
         return usuario
     }
 
-    async loginUsuario(dados: {email: string, senha: string}){
-        const usuario = await usuarioRepository.findOne({where: {email: dados.email}})
-        if(!usuario){
-            throw new NotFoundError('Usuario não encontrado')
-        }
+    async loginUsuario(dados: {email: string, senha: string}) {
 
-        const validarSenha = bcrypt.compare(dados.senha, usuario.senha)
-        if(!validarSenha){
-            throw new UnauthorizedError('Senha invalida')
-        }
+    const usuario = await usuarioRepository.findOne({
+        where: { email: dados.email }
+    })
 
-        const token = generateToken({
-            id: usuario.id,
-            email: usuario.email
-        })
-
-        return {
-            usuario: omitPassword(usuario),
-            token
-
-        }
-        
+    if (!usuario) {
+        throw new NotFoundError('Usuario não encontrado')
     }
+
+    const validarSenha = await bcrypt.compare(dados.senha, usuario.senha)
+
+    if (!validarSenha) {
+        throw new UnauthorizedError('Senha invalida')
+    }
+
+    const token = generateToken({
+        id: usuario.id,
+        email: usuario.email
+    })
+
+    return {
+        usuario: omitPassword(usuario),
+        token
+    }
+}
 
     async buscarUsuario(id: number) {
 

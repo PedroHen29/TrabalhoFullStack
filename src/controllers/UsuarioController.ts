@@ -32,6 +32,19 @@ export class UsuarioController {
     }
 }
 
+    async loginUsuario(req: Request, res: Response, next: NextFunction){
+        try{
+            const {email, senha} = req.body
+
+            const usuario = await usuarioService.loginUsuario({email, senha})
+            return res.json(usuario)
+        }catch(err){
+            next(err)
+        }
+        
+
+    }
+
     async buscarUsuario(req: Request, res: Response, next: NextFunction) {
 
         try {

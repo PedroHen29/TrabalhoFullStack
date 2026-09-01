@@ -13,7 +13,7 @@ export class Usuarios {
     @Column({ length: 100, nullable: false })
     email: string
 
-    @Column({ length: 255, nullable: false, select: false })
+    @Column({ length: 255, nullable: false })
     senha: string
 
     @Column({ length: 50, nullable: true })
