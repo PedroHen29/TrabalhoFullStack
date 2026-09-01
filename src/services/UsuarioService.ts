@@ -2,9 +2,12 @@ import { AppDataSource } from "../database/dataSource";
 import { Usuarios } from "../models/Usuario";
 import { CriarUsuarioDTO } from "../dtos/usuario/CriarUsuarioDTO";
 import { AtualizarUsuarioDTO } from "../dtos/usuario/AtualizarUsuarioDTO";
-import { NotFoundError } from "../errors/AppError";
+import { NotFoundError, UnauthorizedError } from "../errors/AppError";
 import { ConflictError } from "../errors/AppError";
 import bcrypt from 'bcryptjs'
+import { generateToken } from "../utils/jwt";
+import { omit } from "zod/mini";
+import { omitPassword } from "../utils/omitPassword";
 
 const usuarioRepository = AppDataSource.getRepository(Usuarios)
 
@@ -26,6 +29,30 @@ export class UsuarioService {
 
         await usuarioRepository.save(usuario)
         return usuario
+    }
+
+    async loginUsuario(dados: {email: string, senha: string}){
+        const usuario = await usuarioRepository.findOne({where: {email: dados.email}})
+        if(!usuario){
+            throw new NotFoundError('Usuario não encontrado')
+        }
+
+        const validarSenha = bcrypt.compare(dados.senha, usuario.senha)
+        if(!validarSenha){
+            throw new UnauthorizedError('Senha invalida')
+        }
+
+        const token = generateToken({
+            id: usuario.id,
+            email: usuario.email
+        })
+
+        return {
+            usuario: omitPassword(usuario),
+            token
+
+        }
+        
     }
 
     async buscarUsuario(id: number) {
