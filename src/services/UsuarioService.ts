@@ -28,7 +28,7 @@ export class UsuarioService {
         const usuario = usuarioRepository.create(novosDados)
 
         await usuarioRepository.save(usuario)
-        return usuario
+        return omitPassword(usuario)
     }
 
     async loginUsuario(dados: {email: string, senha: string}) {
@@ -68,7 +68,7 @@ export class UsuarioService {
             throw new NotFoundError('Usuario não encontrado.')
         }
 
-        return usuario
+        return omitPassword(usuario)
     }
 
     async atualizarUsuario(id: number, dados: AtualizarUsuarioDTO) {
@@ -99,7 +99,7 @@ export class UsuarioService {
 
         await usuarioRepository.save(novoUsuario)
 
-        return novoUsuario
+        return omitPassword(novoUsuario)
     }
 
     async deletarUsuario(id: number) {
