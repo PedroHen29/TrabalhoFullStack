@@ -45,7 +45,7 @@ export function autenticacaoMiddleware(req: Request, res: Response, next: NextFu
 
     // Guardamos os dados decodificados dentro do req
     // Assim, outros controllers poderiam saber quem é o usuário logado
-    ;(req as any).user = decoded
+    ;(req as any).usuario = decoded
 
     // Se chegou até aqui, está tudo certo
     // Então deixamos a requisição seguir

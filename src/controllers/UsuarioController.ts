@@ -69,8 +69,7 @@ export class UsuarioController {
 
         try {
 
-           const validarId = usuarioParamsSchema.parse(req.params)
-            const  {id}   = validarId
+           const id = (req as any).usuario.id
 
             const validar = AtualizarUsuarioSchema.safeParse(req.body)
 
@@ -97,8 +96,7 @@ export class UsuarioController {
     async deletarUsuario(req: Request, res: Response, next: NextFunction) {
 
         try {
-            const validar = usuarioParamsSchema.parse(req.params)
-            const  {id}   = validar
+            const id = (req as any).usuario.id
 
             await usuarioService.deletarUsuario(id)
 
