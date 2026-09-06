@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { UsuarioService } from "../services/UsuarioService";
-import { CriarUsuarioSchema } from "../dtos/usuario/criarUsuarioSchema";
-import { AtualizarUsuarioSchema } from "../dtos/usuario/atualizarUsuarioSchema";
-import { BadRequestError } from "../errors/AppError";
-import { usuarioParamsSchema } from "../dtos/usuario/usuarioParamsSchema";
+import { atualizarUsuarioSchema, CriarUsuarioDTO, criarUsuarioSchema } from "../dtos/usuarioDTO";
 
 const usuarioService = new UsuarioService()
 
@@ -12,7 +9,7 @@ export class UsuarioController {
     async criarUsuario(req: Request, res: Response, next: NextFunction) {
     try {
 
-        const validar = CriarUsuarioSchema.safeParse(req.body)
+        const validar = criarUsuarioSchema.safeParse(req.body)
 
         if (!validar.success) {
             throw validar.error
@@ -48,8 +45,7 @@ export class UsuarioController {
     async buscarUsuario(req: Request, res: Response, next: NextFunction) {
 
         try {
-            const validar = usuarioParamsSchema.parse(req.params)
-            const  {id}   = validar
+            const id = Number(req.params)
             const usuario = await usuarioService.buscarUsuario(id)
 
             return res.status(200).json({
@@ -65,13 +61,18 @@ export class UsuarioController {
 
     }
 
+    async listar(req: Request, res: Response, next: NextFunction){
+        const usuarios = await usuarioService.listarTodos()
+        return res.status(200).json({message: 'Lista de usuario: ', usuarios})
+    }
+
     async atualizarUsuario(req: Request, res: Response, next: NextFunction) {
 
         try {
 
            const id = (req as any).usuario.id
 
-            const validar = AtualizarUsuarioSchema.safeParse(req.body)
+            const validar = atualizarUsuarioSchema.safeParse(req.body)
 
             if (!validar.success) {
                 throw validar.error

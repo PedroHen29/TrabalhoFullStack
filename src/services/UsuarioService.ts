@@ -1,20 +1,17 @@
-import { AppDataSource } from "../database/dataSource";
-import { Usuarios } from "../models/Usuario";
-import { CriarUsuarioDTO } from "../dtos/usuario/CriarUsuarioDTO";
-import { AtualizarUsuarioDTO } from "../dtos/usuario/AtualizarUsuarioDTO";
+import { CriarUsuarioDTO } from "../dtos/usuarioDTO";
 import { NotFoundError, UnauthorizedError } from "../errors/AppError";
 import { ConflictError } from "../errors/AppError";
 import bcrypt from 'bcryptjs'
 import { generateToken } from "../utils/jwt";
-import { omit } from "zod/mini";
 import { omitPassword } from "../utils/omitPassword";
+import { usuarioRepository } from "../repository/usuarioRepository";
+import { AtualizarUsuarioDTO } from "../dtos/usuarioDTO";
 
-const usuarioRepository = AppDataSource.getRepository(Usuarios)
 
 export class UsuarioService {
 
     async criarUsuario(dados: CriarUsuarioDTO) {
-        const usuarioExiste = await usuarioRepository.findOne({where: {email:dados.email}})
+        const usuarioExiste = await usuarioRepository.buscarPeloEmail(dados.email)
         if(usuarioExiste){
             throw new ConflictError('Email já existente.')
         }
@@ -25,17 +22,13 @@ export class UsuarioService {
             senha: senhaCriptografada
         }
 
-        const usuario = usuarioRepository.create(novosDados)
-
-        await usuarioRepository.save(usuario)
+        const usuario = await usuarioRepository.criar(novosDados)
         return omitPassword(usuario)
     }
 
     async loginUsuario(dados: {email: string, senha: string}) {
 
-    const usuario = await usuarioRepository.findOne({
-        where: { email: dados.email }
-    })
+    const usuario = await usuarioRepository.buscarPeloEmail(dados.email)
 
     if (!usuario) {
         throw new NotFoundError('Usuario não encontrado')
@@ -60,10 +53,7 @@ export class UsuarioService {
 
     async buscarUsuario(id: number) {
 
-        const usuario = await usuarioRepository.findOne({
-            where: { id: id }
-        })
-
+        const usuario = await usuarioRepository.buscarPeloId(id)
         if (!usuario) {
             throw new NotFoundError('Usuario não encontrado.')
         }
@@ -71,10 +61,13 @@ export class UsuarioService {
         return omitPassword(usuario)
     }
 
+    async listarTodos(){
+        const usuarios = await usuarioRepository.listarTodos()
+        return usuarios.map((usuario) => omitPassword(usuario))
+    }
+
     async atualizarUsuario(id: number, dados: AtualizarUsuarioDTO) {
-        const usuario = await usuarioRepository.findOne({
-            where: { id: id }
-        })
+        const usuario = await usuarioRepository.buscarPeloId(id)
 
         if (!usuario) {
             throw new NotFoundError('Usuario não encontrado.')
@@ -87,7 +80,7 @@ export class UsuarioService {
         }
 
         if(dados.email){
-            const usuario = await usuarioRepository.findOne({where: {email: dados.email}})
+            const usuario = await usuarioRepository.buscarPeloEmail(dados.email)
             if(usuario){
                 if(usuario.id !== id){
                     throw new ConflictError('Email já existe.')
@@ -97,22 +90,20 @@ export class UsuarioService {
 
         const novoUsuario = Object.assign(usuario, novosDados)
 
-        await usuarioRepository.save(novoUsuario)
+        await usuarioRepository.salvar(novoUsuario)
 
         return omitPassword(novoUsuario)
     }
 
     async deletarUsuario(id: number) {
 
-        const usuario = await usuarioRepository.findOne({
-            where: { id: id }
-        })
+        const usuario = await usuarioRepository.buscarPeloId(id)
 
         if (!usuario) {
             throw new NotFoundError('Usuario não encontrado')
         }
 
-        await usuarioRepository.delete(id)
+        await usuarioRepository.deletar(id)
     }
 
 }

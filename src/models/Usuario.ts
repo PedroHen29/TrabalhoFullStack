@@ -16,12 +16,6 @@ export class Usuarios {
     @Column({ length: 255, nullable: false })
     senha: string
 
-    @Column({ length: 50, nullable: true })
-    cpf: string
-
-    @Column({ length: 50, nullable: true })
-    telefone: string
-
     @OneToMany(() => Pedidos, (pedido) => pedido.usuario)
     pedidos: Pedidos[]
 }
