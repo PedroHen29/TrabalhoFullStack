@@ -62,8 +62,13 @@ export class UsuarioController {
     }
 
     async listar(req: Request, res: Response, next: NextFunction){
-        const usuarios = await usuarioService.listarTodos()
-        return res.status(200).json({message: 'Lista de usuario: ', usuarios})
+        try{
+            const usuarios = await usuarioService.listarTodos()
+            return res.status(200).json({message: 'Lista de usuario: ', usuarios})
+        }catch(err){
+            next(err)
+        }
+        
     }
 
     async atualizarUsuario(req: Request, res: Response, next: NextFunction) {

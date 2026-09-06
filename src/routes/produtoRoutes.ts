@@ -5,7 +5,8 @@ const router = Router()
 const produtoController = new ProdutoController()
 
 router.post('/', produtoController.criarProduto)
-router.get('/:id', produtoController.buscarProduto)
+router.get('/:nome', produtoController.buscarProduto)
+router.get('/', produtoController.listar.bind(produtoController))
 router.put('/:id', produtoController.atualizarProduto)
 router.delete('/:id', produtoController.deletarProduto)
 

@@ -1,8 +1,6 @@
-import { criarProdutoSchema } from "../dtos/produto/criarProdutoSchema";
+import { atualizarProdutoSchema, criarProdutoSchema } from "../dtos/produtoDTO";
 import { ProdutoService } from "../services/ProdutoService";
 import { Request, Response, NextFunction } from "express";
-import { produtoParamsSchema } from "../dtos/produto/produtoParamsSchema";
-import { atualizarProdutoSchema } from "../dtos/produto/atualizarProdutoSchema";
 const produtoService = new ProdutoService()
 
 export class ProdutoController {
@@ -22,9 +20,8 @@ export class ProdutoController {
 
     async buscarProduto(req: Request, res: Response, next: NextFunction){
         try{
-            const validar = produtoParamsSchema.parse(req.params)
-            const {id} = validar
-            const produto = await produtoService.buscarProduto(id)
+            const nome = String(req.params)
+            const produto = await produtoService.buscarProduto(nome)
             return res.status(200).json({message: 'Produto encontrado.', produto})
         }catch(err){
             next(err)
@@ -32,10 +29,18 @@ export class ProdutoController {
         
     }
 
+    async listar(req: Request, res: Response, next: NextFunction){
+        try{
+            const produtos = await produtoService.listar()
+            return res.status(200).json({message: 'Lista de produtos', produtos})
+        }catch(err){
+            next(err)
+        }
+    }
+
     async atualizarProduto(req: Request, res: Response, next: NextFunction){
         try{
-            const validarId = produtoParamsSchema.parse(req.params)
-            const {id} = validarId
+            const id = Number(req.params)
 
             const validar = atualizarProdutoSchema.safeParse(req.body)
             if(!validar.success){
@@ -52,8 +57,7 @@ export class ProdutoController {
 
     async deletarProduto(req: Request, res: Response, next: NextFunction){
         try{
-            const validar = produtoParamsSchema.parse(req.params)
-            const {id} = validar
+            const id = Number(req.body)
             await produtoService.deletarProduto(id)
 
             return res.status(200).json({message: 'Produto deletado com sucesso.'})
