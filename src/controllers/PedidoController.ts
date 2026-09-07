@@ -1,8 +1,8 @@
+import { atualizarPedidoSchema, criarPedidoSchema } from "../dtos/pedidoDTO";
+import { UnauthorizedError } from "../errors/AppError";
 import { PedidoService } from "../services/PedidoService";
-import { criarPedidoSchema } from "../dtos/pedido/criarPedidoSchema";
 import { Request, Response, NextFunction } from "express";
-import { pedidoParamsSchema } from "../dtos/pedido/pedidoParamsSchema";
-import { atualizarPedidoSchema } from "../dtos/pedido/atualizarPedidoSchema";
+
 
 const pedidoService = new PedidoService()
 
@@ -24,8 +24,7 @@ export class PedidoController {
 
     async buscarPedido(req:Request, res:Response, next:NextFunction){
         try{
-            const validar =  pedidoParamsSchema.parse(req.params)
-            const {id} = validar
+            const id = Number(req.body)
             const pedido = await pedidoService.buscarPedido(id)
 
             return res.status(200).json({message: 'Pedido encontrado', pedido})
@@ -34,17 +33,31 @@ export class PedidoController {
         }
     }
 
+    async listar(req: Request, res:Response, next:NextFunction){
+        try{
+            const pedidos = await pedidoService.listar()
+            return res.status(200).json({message: 'Pedidos: ', pedidos})
+        }catch(err){
+            next(err)
+        }
+    }
+
     async atualizarPedido(req:Request, res:Response, next:NextFunction){
         try{
-            const validarId = pedidoParamsSchema.parse(req.params)
-            const {id} = validarId
+            const usuarioId = (req as any).usuario.id
+            const id = Number(req.params)
 
             const validar = atualizarPedidoSchema.safeParse(req.body)
             if(!validar.success){
                 throw validar.error
             }
+
+            const pedido = await pedidoService.buscarPedido(id)
             const dados = validar.data
-            const pedido = await pedidoService.atualizarPedido(id, dados)
+            if(pedido.usuario.id !== usuarioId){
+                throw new UnauthorizedError('Você não pode atualizar esse pedido')
+            }
+            const pedidoAtualizado = await pedidoService.atualizarPedido(id, dados)
 
             return res.status(200).json({message: 'Pedido atualizado com sucesso.', pedido})
         }catch(err){
@@ -54,8 +67,7 @@ export class PedidoController {
 
     async deletarPedido(req:Request, res:Response, next:NextFunction){
         try{
-            const validar = pedidoParamsSchema.parse(req.params)
-            const {id} = validar
+            const id = Number(req.body)
             await pedidoService.deletarPedido(id)
 
             return res.status(200).json({message: 'Pedido deletado com sucesso.'})

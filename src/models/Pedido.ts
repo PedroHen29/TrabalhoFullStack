@@ -13,6 +13,9 @@ export class Pedidos{
     @Column({type: 'decimal', precision: 10, scale: 2})
     valorTotal: number
 
+    @Column()
+    quantidade: number
+
     @ManyToOne(() => Usuarios)
     @JoinColumn({name: 'usuarioId'})
     usuario: Usuarios
