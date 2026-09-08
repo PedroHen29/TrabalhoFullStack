@@ -48,6 +48,7 @@ export class ProdutoService {
 
     async deletarProduto(id: number){
         const produto = await produtoRepository.buscarPeloId(id)
+        console.log(id)
         if(!produto){
             throw new NotFoundError('Produto não encontrado.')
         }

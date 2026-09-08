@@ -59,7 +59,7 @@ export class PedidoController {
             }
             const pedidoAtualizado = await pedidoService.atualizarPedido(id, dados)
 
-            return res.status(200).json({message: 'Pedido atualizado com sucesso.', pedido})
+            return res.status(200).json({message: 'Pedido atualizado com sucesso.', pedidoAtualizado})
         }catch(err){
             next(err)
         }
@@ -67,9 +67,13 @@ export class PedidoController {
 
     async deletarPedido(req:Request, res:Response, next:NextFunction){
         try{
-            const id = Number(req.body)
+            const usuarioId = (req as any).usuario.id
+            const id = Number(req.params)
+            const pedido = await pedidoService.buscarPedido(id)
+            if(usuarioId !== pedido.usuario.id){
+                throw new UnauthorizedError('Você não pode deletar esse pedido.')
+            }
             await pedidoService.deletarPedido(id)
-
             return res.status(200).json({message: 'Pedido deletado com sucesso.'})
         }catch(err){
             next(err)

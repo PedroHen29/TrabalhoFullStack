@@ -30,5 +30,6 @@ export const produtoRepository = {
 
     async deletar(id: number){
         await repo.delete(id)
+        console.log(id)
     }
 }

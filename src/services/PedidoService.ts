@@ -7,6 +7,7 @@ import { pedidoRepository } from "../repository/pedidoRepository";
 import { produtoRepository } from "../repository/produtoRepository";
 import { usuarioRepository } from "../repository/usuarioRepository";
 import {itemPedidoRepository} from "../repository/itemPedidoRepository";
+import { omitPassword } from "../utils/omitPassword";
 
 
 export class PedidoService {
@@ -25,7 +26,7 @@ export class PedidoService {
             throw new BadRequestError('Estoque insuficiente')
         }
         produto.estoque = produto.estoque - dados.quantidade
-
+        omitPassword(usuario)
         await produtoRepository.salvar(produto)
         const valorTotal = produto.preco*dados.quantidade
         const pedido = await pedidoRepository.criar({
@@ -33,15 +34,14 @@ export class PedidoService {
             valorTotal,
             usuario
         })
-        await pedidoRepository.salvar(pedido)
-
+        console.log(dados)
+        console.log(dados.quantidade)
         const itemPedido = await itemPedidoRepository.criar({
             quantidade: dados.quantidade,
             precoUnitario: produto.preco,
             pedido,
             produto
         })
-        await itemPedidoRepository.salvar(itemPedido)
         return itemPedido
     }
 

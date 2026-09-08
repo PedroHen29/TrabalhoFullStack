@@ -40,7 +40,7 @@ export class ProdutoController {
 
     async atualizarProduto(req: Request, res: Response, next: NextFunction){
         try{
-            const id = Number(req.params)
+            const id = Number(req.params.id)
 
             const validar = atualizarProdutoSchema.safeParse(req.body)
             if(!validar.success){
@@ -57,7 +57,8 @@ export class ProdutoController {
 
     async deletarProduto(req: Request, res: Response, next: NextFunction){
         try{
-            const id = Number(req.body)
+            const id = Number(req.body.id)
+            console.log(id)
             await produtoService.deletarProduto(id)
 
             return res.status(200).json({message: 'Produto deletado com sucesso.'})

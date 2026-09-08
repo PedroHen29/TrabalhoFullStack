@@ -24,7 +24,9 @@ const errorMiddleware: ErrorRequestHandler = (err, req, res, next) => {
     }
 
     return res.status(500).json({
-        message: 'Ocorreu um erro.'
+        message: 'Ocorreu um erro.',
+        error: err.message
+
     })
 
 }
