@@ -1,13 +1,10 @@
 import { AppDataSource } from "../database/dataSource";
 import { AtualizarPedidoDTO, CriarPedidoDTO } from "../dtos/pedidoDTO";
 import { BadRequestError, NotFoundError } from "../errors/AppError";
-import { ItemPedido } from "../models/ItemPedido";
-import { Produtos } from "../models/Produto";
 import { pedidoRepository } from "../repository/pedidoRepository";
 import { produtoRepository } from "../repository/produtoRepository";
 import { usuarioRepository } from "../repository/usuarioRepository";
 import {itemPedidoRepository} from "../repository/itemPedidoRepository";
-import { omitPassword } from "../utils/omitPassword";
 
 
 export class PedidoService {
@@ -26,7 +23,6 @@ export class PedidoService {
             throw new BadRequestError('Estoque insuficiente')
         }
         produto.estoque = produto.estoque - dados.quantidade
-        omitPassword(usuario)
         await produtoRepository.salvar(produto)
         const valorTotal = produto.preco*dados.quantidade
         const pedido = await pedidoRepository.criar({
@@ -42,7 +38,7 @@ export class PedidoService {
             pedido,
             produto
         })
-        return itemPedido
+        return (itemPedido)
     }
 
     async buscarPedido(id:number){
@@ -108,10 +104,6 @@ export class PedidoService {
         if(!pedido){
             throw new NotFoundError('Pedido não encontrado.')
         }
-        console.log('ID recebido:', id)
-        console.log('ID do pedido encontrado:', pedido.id)
-
-        const resultado = await pedidoRepository.deletar(pedido.id)
-        console.log(resultado)
+        await pedidoRepository.deletar(id)
     }
 }

@@ -18,6 +18,6 @@ export class Pedidos{
     @JoinColumn({name: 'usuarioId'})
     usuario: Usuarios
 
-    @OneToMany(() => ItemPedido, item => item.pedido)
+    @OneToMany(() => ItemPedido, item => item.pedido, {onDelete: 'CASCADE'})
     itens: ItemPedido[]
 }

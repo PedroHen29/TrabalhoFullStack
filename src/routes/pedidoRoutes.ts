@@ -5,7 +5,7 @@ import { autenticacaoMiddleware } from "../middlewares/autenticacaoMiddleware";
 const router = Router()
 const pedidoController = new PedidoController()
 
-router.post('/',  pedidoController.criarPedido)
+router.post('/', autenticacaoMiddleware,  pedidoController.criarPedido)
 router.get('/:id', pedidoController.buscarPedido)
 router.get('/', pedidoController.listar)
 router.put('/:id', autenticacaoMiddleware, pedidoController.atualizarPedido)

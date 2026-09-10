@@ -10,12 +10,14 @@ export class PedidoController {
 
     async criarPedido(req:Request, res: Response, next: NextFunction){
         try{
-            const validar = criarPedidoSchema.safeParse(req.body)
-            if(!validar.success){
-                throw validar.error
-            }
-            const dados = validar.data
-            const pedido =  await pedidoService.criarPedido(dados)
+            const usuarioId = Number((req as any).usuario.id)
+            const dados = req.body
+            
+            const pedido =  await pedidoService.criarPedido({
+                ...dados,
+                usuarioId
+            })
+            
             return res.status(201).json({message: 'Pedido criado com sucesso.', pedido})
         }catch(err){
             next(err)
@@ -45,22 +47,19 @@ export class PedidoController {
     async atualizarPedido(req:Request, res:Response, next:NextFunction){
         try{
             const usuarioId = (req as any).usuario.id
-            const id = Number(req.params)
+            const {id} = req.params
+            const Numeroid = Number(id)
 
-            const validar = atualizarPedidoSchema.safeParse(req.body)
-            if(!validar.success){
-                throw validar.error
-            }
-
-            const pedido = await pedidoService.buscarPedido(id)
-            const dados = validar.data
+            const pedido = await pedidoService.buscarPedido(Numeroid)
+            const dados = req.body
             if(pedido.usuario.id !== usuarioId){
                 throw new UnauthorizedError('Você não pode atualizar esse pedido')
             }
-            const pedidoAtualizado = await pedidoService.atualizarPedido(id, dados)
+            const pedidoAtualizado = await pedidoService.atualizarPedido(Numeroid, dados)
 
             return res.status(200).json({message: 'Pedido atualizado com sucesso.', pedidoAtualizado})
         }catch(err){
+            console.log(err)
             next(err)
         }
     }
@@ -68,12 +67,13 @@ export class PedidoController {
     async deletarPedido(req:Request, res:Response, next:NextFunction){
         try{
             const usuarioId = (req as any).usuario.id
-            const id = Number(req.params)
-            const pedido = await pedidoService.buscarPedido(id)
+            const {id} = req.params
+            const numeroId = Number(id)
+            const pedido = await pedidoService.buscarPedido(numeroId)
             if(usuarioId !== pedido.usuario.id){
                 throw new UnauthorizedError('Você não pode deletar esse pedido.')
             }
-            await pedidoService.deletarPedido(id)
+            await pedidoService.deletarPedido(numeroId)
             return res.status(200).json({message: 'Pedido deletado com sucesso.'})
         }catch(err){
             next(err)
