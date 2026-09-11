@@ -5,6 +5,7 @@ import { pedidoRepository } from "../repository/pedidoRepository";
 import { produtoRepository } from "../repository/produtoRepository";
 import { usuarioRepository } from "../repository/usuarioRepository";
 import {itemPedidoRepository} from "../repository/itemPedidoRepository";
+import { notFoundMiddleware } from "../middlewares/errorMiddleware";
 
 
 export class PedidoService {
@@ -99,11 +100,19 @@ export class PedidoService {
         return await pedidoRepository.salvar(pedido);
     }
 
-    async deletarPedido(id:number){
-        const pedido = await pedidoRepository.buscarPeloId(id)
+    async deletarPedido(pedidoId:number, produtoId: number){
+        const pedido = await pedidoRepository.buscarPeloId(pedidoId)
         if(!pedido){
             throw new NotFoundError('Pedido não encontrado.')
         }
-        await pedidoRepository.deletar(id)
+        const itens = await itemPedidoRepository.buscarPeloPedidoId(pedido.id)
+        if(!itens){
+            throw new NotFoundError('Item não encontrado')
+        }
+        for(const item of itens){
+            await itemPedidoRepository.deletar(item.id)
+        }
+        await pedidoRepository.deletar(pedidoId)
+
     }
 }
