@@ -6,6 +6,19 @@ const repo = AppDataSource.getRepository(ItemPedido)
 
 export const itemPedidoRepository = {
     async buscarPeloPedidoId(pedidoId: number) {
+        return await repo.findOne({
+            where: {
+                pedido: {
+                    id: pedidoId
+                }
+            },
+            relations: {
+                produto: true
+            }
+        })
+    },
+
+    async buscarItensPeloPedidoId(pedidoId: number) {
         return await repo.find({
             where: {
                 pedido: {

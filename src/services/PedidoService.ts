@@ -1,11 +1,9 @@
-import { AppDataSource } from "../database/dataSource";
 import { AtualizarPedidoDTO, CriarPedidoDTO } from "../dtos/pedidoDTO";
 import { BadRequestError, NotFoundError } from "../errors/AppError";
 import { pedidoRepository } from "../repository/pedidoRepository";
 import { produtoRepository } from "../repository/produtoRepository";
 import { usuarioRepository } from "../repository/usuarioRepository";
 import {itemPedidoRepository} from "../repository/itemPedidoRepository";
-import { notFoundMiddleware } from "../middlewares/errorMiddleware";
 
 
 export class PedidoService {
@@ -55,6 +53,7 @@ export class PedidoService {
     }
 
     async atualizarPedido(id: number, dados: AtualizarPedidoDTO) {
+        
         const pedido = await pedidoRepository.buscarPeloId(id)
         
         if (!pedido) {
@@ -82,9 +81,9 @@ export class PedidoService {
 
     const produto = await produtoRepository.buscarPeloId(itemPedido.produto.id)
 
-        if (!produto) {           
-            throw new NotFoundError('Produto não encontrado.')
-        }
+    if (!produto) {           
+        throw new NotFoundError('Produto não encontrado.')
+    }
         const diferenca = dados.quantidade - itemPedido.quantidade
         if (diferenca > produto.estoque) {
             throw new BadRequestError('Estoque insuficiente.')
@@ -100,19 +99,22 @@ export class PedidoService {
         return await pedidoRepository.salvar(pedido);
     }
 
-    async deletarPedido(pedidoId:number, produtoId: number){
+    async deletarPedido(pedidoId: number) {
         const pedido = await pedidoRepository.buscarPeloId(pedidoId)
-        if(!pedido){
+        if (!pedido) {
             throw new NotFoundError('Pedido não encontrado.')
         }
-        const itens = await itemPedidoRepository.buscarPeloPedidoId(pedido.id)
-        if(!itens){
-            throw new NotFoundError('Item não encontrado')
+    
+        const itens = await itemPedidoRepository.buscarItensPeloPedidoId(pedido.id)
+        if (itens.length === 0) {
+            throw new NotFoundError('Itens do pedido não encontrados.')
         }
-        for(const item of itens){
+    
+        for (const item of itens) {    
+            item.produto.estoque += item.quantidade    
+            await produtoRepository.salvar(item.produto)  
             await itemPedidoRepository.deletar(item.id)
         }
         await pedidoRepository.deletar(pedidoId)
-
     }
 }
