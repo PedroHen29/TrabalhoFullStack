@@ -45,7 +45,7 @@ export class UsuarioController {
     async buscarUsuario(req: Request, res: Response, next: NextFunction) {
 
         try {
-            const id = Number(req.params)
+            const id = Number(req.params.id)
             const usuario = await usuarioService.buscarUsuario(id)
 
             return res.status(200).json({

@@ -20,7 +20,7 @@ export class ProdutoController {
 
     async buscarProduto(req: Request, res: Response, next: NextFunction){
         try{
-            const nome = String(req.params)
+            const nome = String(req.params.nome)
             const produto = await produtoService.buscarProduto(nome)
             return res.status(200).json({message: 'Produto encontrado.', produto})
         }catch(err){
@@ -57,7 +57,7 @@ export class ProdutoController {
 
     async deletarProduto(req: Request, res: Response, next: NextFunction){
         try{
-            const id = Number(req.body.id)
+            const id = Number(req.params.id)
             console.log(id)
             await produtoService.deletarProduto(id)
 

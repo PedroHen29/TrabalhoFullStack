@@ -26,7 +26,7 @@ export class PedidoController {
 
     async buscarPedido(req:Request, res:Response, next:NextFunction){
         try{
-            const id = Number(req.body)
+            const id = Number(req.body.id)
             const pedido = await pedidoService.buscarPedido(id)
 
             return res.status(200).json({message: 'Pedido encontrado', pedido})
