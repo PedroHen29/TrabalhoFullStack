@@ -7,37 +7,33 @@ import {itemPedidoRepository} from "../repository/itemPedidoRepository";
 
 
 export class PedidoService {
-    async criarPedido(dados: CriarPedidoDTO){
-        const usuario = await usuarioRepository.buscarPeloId(dados.usuarioId)
+    async criarPedido(usuarioId: number, dados: CriarPedidoDTO){
+        const usuario = await usuarioRepository.buscarPeloId(usuarioId)
         if(!usuario){
-            throw new NotFoundError('Usuario não encontrado.')
+            throw new NotFoundError('Usuario não encontrado')
         }
-
-        const produto = await produtoRepository.buscarPeloId(dados.produtoId)
-        if(!produto){
-            throw new NotFoundError('Produto não encontrado')
-        }
-
-        if(dados.quantidade > produto.estoque){
-            throw new BadRequestError('Estoque insuficiente')
-        }
-        produto.estoque = produto.estoque - dados.quantidade
-        await produtoRepository.salvar(produto)
-        const valorTotal = produto.preco*dados.quantidade
         const pedido = await pedidoRepository.criar({
+            usuario: usuario,
             data: new Date(),
-            valorTotal,
-            usuario
+            valorTotal: 0
         })
-        console.log(dados)
-        console.log(dados.quantidade)
-        const itemPedido = await itemPedidoRepository.criar({
-            quantidade: dados.quantidade,
-            precoUnitario: produto.preco,
-            pedido,
-            produto
-        })
-        return (itemPedido)
+        for(const item of dados.itens){
+            const produto = await produtoRepository.buscarPeloId(item.produtoId)
+            if(!produto)throw new NotFoundError('Produto não encontrado')
+            if(item.quantidade > produto.estoque)throw new BadRequestError('Quantidade maior que estoque')
+            produto.estoque -= item.quantidade
+            await produtoRepository.salvar(produto)
+            await itemPedidoRepository.criar({
+                quantidade: item.quantidade,
+                precoUnitario: produto.preco,
+                pedido,
+                produto
+            })
+            pedido.valorTotal += produto.preco*item.quantidade
+            
+        }
+        await pedidoRepository.salvar(pedido)
+        return pedido
     }
 
     async buscarPedido(id:number){
@@ -53,50 +49,11 @@ export class PedidoService {
     }
 
     async atualizarPedido(id: number, dados: AtualizarPedidoDTO) {
-        
         const pedido = await pedidoRepository.buscarPeloId(id)
-        
-        if (!pedido) {
-        throw new NotFoundError('Pedido não encontrado');
-        }
+        if(!pedido)throw new NotFoundError('Pedido não encontrado')
+        if(dados.data)pedido.data = dados.data
 
-        if(dados.valorTotal !== undefined){
-            if(dados.valorTotal <= 0){
-                throw new BadRequestError('Valor total não pode ser menor ou igual a zero.')
-            }
-        }
-        if (dados.quantidade !== undefined) {
-
-    if (dados.quantidade <= 0) {
-        throw new BadRequestError(
-            'Quantidade não pode ser negativa nem igual a zero'
-        )
-    }
-
-    const itemPedido = await itemPedidoRepository.buscarPeloPedidoId(id)
-
-    if (!itemPedido) {
-        throw new NotFoundError('Item do pedido não encontrado.')
-    }
-
-    const produto = await produtoRepository.buscarPeloId(itemPedido.produto.id)
-
-    if (!produto) {           
-        throw new NotFoundError('Produto não encontrado.')
-    }
-        const diferenca = dados.quantidade - itemPedido.quantidade
-        if (diferenca > produto.estoque) {
-            throw new BadRequestError('Estoque insuficiente.')
-        }
-        produto.estoque = produto.estoque - diferenca
-        itemPedido.quantidade = dados.quantidade
-        await produtoRepository.salvar(produto)
-        await itemPedidoRepository.salvar(itemPedido)
-}
-        if (dados.data !== undefined) pedido.data = dados.data;
-        if (dados.valorTotal !== undefined) pedido.valorTotal = dados.valorTotal;
-
-        return await pedidoRepository.salvar(pedido);
+        return await pedidoRepository.salvar(pedido)
     }
 
     async deletarPedido(pedidoId: number) {

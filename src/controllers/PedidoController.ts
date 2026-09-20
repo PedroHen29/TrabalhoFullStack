@@ -11,12 +11,12 @@ export class PedidoController {
     async criarPedido(req:Request, res: Response, next: NextFunction){
         try{
             const usuarioId = Number((req as any).usuario.id)
-            const dados = req.body
+            const validar = criarPedidoSchema.safeParse(req.body)
+            if(!validar.success)throw validar.error
             
-            const pedido =  await pedidoService.criarPedido({
-                ...dados,
-                usuarioId
-            })
+            const dados = validar.data
+            
+            const pedido =  await pedidoService.criarPedido(usuarioId, dados)
             
             return res.status(201).json({message: 'Pedido criado com sucesso.', pedido})
         }catch(err){
@@ -26,7 +26,7 @@ export class PedidoController {
 
     async buscarPedido(req:Request, res:Response, next:NextFunction){
         try{
-            const id = Number(req.body.id)
+            const id = Number(req.params.id)
             const pedido = await pedidoService.buscarPedido(id)
 
             return res.status(200).json({message: 'Pedido encontrado', pedido})
@@ -51,7 +51,11 @@ export class PedidoController {
             const Numeroid = Number(id)
 
             const pedido = await pedidoService.buscarPedido(Numeroid)
-            const dados = req.body
+
+            const validar = atualizarPedidoSchema.safeParse(req.body)
+            if(!validar.success)throw validar.error
+            const dados = validar.data
+            
             if(pedido.usuario.id !== usuarioId){
                 throw new UnauthorizedError('Você não pode atualizar esse pedido')
             }
