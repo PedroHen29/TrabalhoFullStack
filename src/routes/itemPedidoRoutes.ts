@@ -6,6 +6,7 @@ import { autenticacaoMiddleware } from "../middlewares/autenticacaoMiddleware";
 const router = Router()
 const controller = new ItemPedidoController()
 
+router.post('/:id', autenticacaoMiddleware, controller.adicionar)
 router.delete('/:id', autenticacaoMiddleware, controller.deletar)
 
 export default router
