@@ -33,7 +33,7 @@ export class ItemPedidoController {
       const itemPedidoId = Number(id);
 
       const itemPedido = await itemPedidoService.buscarItemPedido(itemPedidoId);
-      const pedido = await pedidoService.buscarPedido(itemPedido.id);
+      const pedido = await pedidoService.buscarPedido(itemPedido.pedido.id);
       if (pedido.usuario.id !== usuarioId)
         throw new UnauthorizedError("Você não pode deletar este pedido");
 

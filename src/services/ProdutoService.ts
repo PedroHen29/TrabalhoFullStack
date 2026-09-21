@@ -33,8 +33,8 @@ export class ProdutoService {
             throw new NotFoundError('Produto não encontrado.')
         }
         
-        if(dados.nome !== undefined){
-            const validar = await produtoRepository.buscarPeloNome(produto.nome)
+        if(dados.nome !== undefined && dados.nome !== produto.nome){
+            const validar = await produtoRepository.buscarPeloNome(dados.nome)
             if(validar){
                 throw new ConflictError('Produto com esse nome já existe.')
             }

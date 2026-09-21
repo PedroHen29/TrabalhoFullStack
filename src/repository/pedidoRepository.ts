@@ -16,7 +16,7 @@ export const pedidoRepository = {
     });
   },
 
-  async listar() {
+  async listar(usuarioId:number) {
     return await repo.find({
       relations: { usuario: true, itens: { produto: true } },
     });

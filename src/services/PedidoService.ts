@@ -36,16 +36,16 @@ export class PedidoService {
         return pedido
     }
 
-    async buscarPedido(id:number){
-        const pedido = await pedidoRepository.buscarPeloId(id)
+    async buscarPedido(usuarioId:number){
+        const pedido = await pedidoRepository.buscarPeloId(usuarioId)
         if(!pedido){
             throw new NotFoundError('Pedido não encontrado.')
         }
         return pedido
     }
 
-    async listar(){
-        return await pedidoRepository.listar()
+    async listar(id:number){
+        return await pedidoRepository.listar(id)
     }
 
     async atualizarPedido(id: number, dados: AtualizarPedidoDTO) {

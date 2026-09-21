@@ -37,7 +37,9 @@ export class PedidoController {
 
     async listar(req: Request, res:Response, next:NextFunction){
         try{
-            const pedidos = await pedidoService.listar()
+            const usuarioId = (req as any).usuario.id
+
+            const pedidos = await pedidoService.listar(usuarioId)
             return res.status(200).json({message: 'Pedidos: ', pedidos})
         }catch(err){
             next(err)

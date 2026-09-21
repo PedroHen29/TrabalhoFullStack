@@ -5,11 +5,12 @@ import pedidoRouter from "./routes/pedidoRoutes"
 import produtoRouter from "./routes/produtoRoutes"
 import itemPedidoRouter from "./routes/itemPedidoRoutes"
 import {errorMiddleware,notFoundMiddleware} from "./middlewares/errorMiddleware";
-
+import cors from 'cors'
 const app: Application = express()
 
 const PORT: number = Number("3000")
 
+app.use(cors())
 app.use(express.json())
 
 app.get('/', (req, res) => {
