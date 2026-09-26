@@ -1,9 +1,8 @@
-import e, { Request, Response, NextFunction } from "express";
-import { pedidoRepository } from "../repository/pedidoRepository";
+import  { Request, Response, NextFunction } from "express";
 import { ItemPedidoService } from "../services/ItemPedidoService";
 import { PedidoService } from "../services/PedidoService";
-import { BadRequestError, UnauthorizedError } from "../errors/AppError";
-import { criarPedidoSchema } from "../dtos/pedidoDTO";
+import {  UnauthorizedError } from "../errors/AppError";
+
 
 const itemPedidoService = new ItemPedidoService();
 const pedidoService = new PedidoService();
